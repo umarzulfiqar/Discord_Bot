@@ -17,6 +17,9 @@ async def on_ready(bot : discord.Client):
     all_data = []
 
     async for message in channel.history(limit=200):
+        if message.author.bot:
+            continue
+
         data : dict[str,Any] = {
             "_id": message.id,
             "author" : str(message.author),
