@@ -2,4 +2,4 @@ __pycache__
 .env
 venv
 discord.log
-.idea
+.idea/

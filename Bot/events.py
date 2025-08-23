@@ -64,3 +64,40 @@ async def on_message(bot,message:discord.Message):
     print("Message saved:", data)
 
     await bot.process_commands(message)
+
+async def on_reaction_add(reaction,user):
+    if user.bot:
+        return
+
+    messages_collection.update_one(
+        {"_id": reaction.message.id},
+        {"$addToSet": {f"reactions.{str(reaction.emoji)}": str(user.id)}},
+        upsert=True
+    )
+    print(f"emoji {reaction.emoji} added by {user.id}")
+
+async def on_reaction_remove(reaction,user):
+    if user.bot:
+        return
+    messages_collection.update_one(
+        {"_id": reaction.message.id},
+        {"$pull": {f"reactions.{str(reaction.emoji)}": str(user.id)}}
+    )
+    print(f"emoji {reaction.emoji} removed by {user.id}")
+
+async def on_raw_reaction_add(payload:discord.RawReactionActionEvent):
+    if payload.user_id == payload.member.bot:
+        return
+    messages_collection.update_one(
+        {"_id" : payload.message_id},
+        {"$addToSet": {f"reactions.{str(payload.emoji)}": str(payload.user_id)}},
+        upsert= True
+    )
+    print(f"emoji{payload.emoji} added by {payload.user_id}")
+
+async def on_raw_reaction_remove(payload:discord.RawReactionActionEvent):
+    messages_collection.update_one(
+        {"_id" : payload.message_id},
+        {"$pull": {f"reactions.{str(payload.emoji)}": str(payload.user_id)}}
+    )
+    print(f"emoji {payload.emoji} removed by {payload.user_id}")
