@@ -21,6 +21,7 @@ async def on_message(bot,message:discord.Message):
 
     #save message into mongodb
     data: dict[str, Any] = {
+        "_id": message.id,
         "author" : str(message.author),
         "content" : message.content,
         "channel" : str(message.channel),
