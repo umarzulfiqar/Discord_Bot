@@ -16,7 +16,7 @@ async def on_ready(bot : discord.Client):
     channel = bot.get_channel(channel_id)
     all_data = []
 
-    async for message in channel.history(limit=200):
+    async for message in channel.history(limit=None):
         if message.author.bot:
             continue
 
@@ -29,13 +29,26 @@ async def on_ready(bot : discord.Client):
         }
         if message.attachments:
             data["attachments"] = [attachment.url for attachment in message.attachments]
-        all_data.append(data)
 
-    try:
-        messages_collection.insert_many(all_data, ordered=False)
-    except BulkWriteError:
-        pass
-    print("History messages saved!")
+
+        if message.reactions:
+            data["reactions"] = {}
+            for reaction in message.reactions:
+                user_ids = []
+                async for user in reaction.users(limit=None):
+                    user_ids.append(str(user.id))
+                data["reactions"][str(reaction.emoji)] = user_ids
+        all_data.append(data)
+    for data in all_data:
+        try:
+            messages_collection.update_one(
+                {"_id": data["_id"]},
+                {"$set": data},
+                upsert=True
+            )
+        except Exception as e:
+            print(f"Error saving message {data['_id']}: {e}")
+    print("History messages and reactions saved!")
 
 async def on_member_join(member : discord.Member):
     await member.send(f"Welcome to the server {member.name}")
