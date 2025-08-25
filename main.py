@@ -37,6 +37,22 @@ async def on_message(message):
     await events.on_message(bot,message)
 
 
+@bot.event
+async def on_reaction_add(reaction,user):
+    await events.on_reaction_add(reaction,user)
+
+@bot.event
+async def on_reaction_remove(reaction,user):
+    await events.on_reaction_remove(reaction,user)
+
+@bot.event
+async def on_raw_reaction_add(payload):
+    await events.on_raw_reaction_add(payload)
+
+@bot.event
+async def on_raw_reaction_remove(payload):
+    await events.on_raw_reaction_remove(payload)
+
 bot_commands.setup_commands(bot)
 
 bot.run(token, log_handler=handler, log_level=logging.DEBUG)
