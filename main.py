@@ -13,8 +13,14 @@ handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w'
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
+intents.reactions = True
+intents.guilds = True
+intents.messages = True
 
-bot = commands.Bot(command_prefix="!",intents=intents,)
+bot = commands.Bot(command_prefix="!",
+                   intents=intents,
+                   max_messages=5000
+                   )
 
 
 @bot.event
@@ -29,6 +35,7 @@ async def on_member_join(member):
 @bot.event
 async def on_message(message):
     await events.on_message(bot,message)
+
 
 bot_commands.setup_commands(bot)
 
