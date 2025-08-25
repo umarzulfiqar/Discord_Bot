@@ -17,7 +17,10 @@ intents.reactions = True
 intents.guilds = True
 intents.messages = True
 
-bot = commands.Bot(command_prefix="!", intents=intents,max_messages=5000)
+bot = commands.Bot(command_prefix="!",
+                   intents=intents,
+                   max_messages=5000
+                   )
 
 
 @bot.event
